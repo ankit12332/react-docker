@@ -1,70 +1,68 @@
-# Getting Started with Create React App
+REACT-DOCKER CONFIGURATION IN AWS LINUX EC2 SERVER
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Update the package manager repositories by running the following command:
+sudo yum update -y
 
-## Available Scripts
+Install nodejs:
+sudo yum install nodejs
 
-In the project directory, you can run:
+Install  React Project
+npx create-react-app frontend
 
-### `npm start`
+Install Docker by running the following commands:
+sudo yum install -y docker
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Start the Docker service:
+sudo service docker start
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Check information about docker and you can check containers or image is there or not, Running, Paused, Stopped services or not:
+sudo docker info
 
-### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Go inside the project and create Dockerfile
+cd frontend
+touch Dockerfile
+nano Dockerfile
 
-### `npm run build`
+then paste these into the dockerfile
+# Use a base image with Node.js installed
+FROM node:18.16.0-alpine
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+# Set the working directory inside the container
+WORKDIR /app
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+# Copy package.json and package-lock.json (if available)
+COPY package*.json ./
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# Install project dependencies
+RUN npm install
 
-### `npm run eject`
+# Copy the entire project directory into the container
+COPY . .
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+# Build the React app
+RUN npm run build
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+# Set the startup command to run the React app
+CMD ["npm", "start"]
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+To build the Docker image, make sure you are in the same directory as your Dockerfile and execute the following command:
+sudo docker build -t react-app .
+To expose a port from your Docker container, you can use the -p or --publish flag when running the container. This flag allows you to map a port on your host machine to a port inside the container.
+Here's the syntax to expose a port when running a container:
+docker run -p <host-port>:<container-port> your-image-name
+sudo docker run -d --name DMS_APP -p 8000:3000 react-app:latest
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+To see containerId
+sudo docker ps -ls
+To stop a running Docker container, you can use the docker stop command followed by the container ID or container name. Here's the syntax:
+sudo docker stop <container_id_or_name>
 
-## Learn More
+If you need to remove the stopped container entirely, you can use the docker rm command. However, please note that this will permanently delete the container and its associated resources. Here's the syntax:
+sudo docker rm <container_id_or_name>
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+To remove a Docker image, you can use the docker rmi command followed by the image ID or image name. Here's the syntax:
+sudo docker rmi <image_id_or_name>
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+To see inside the container
+sudo docker exec -it c001f8765516 ls
